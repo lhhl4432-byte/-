@@ -167,7 +167,7 @@ AboutTab:Keybind({
     AboutTab:Divider()
 
 AboutTab:Button({
-    Title = "BkFdIV3全局汉化",
+    Title = "BkFdV3全局汉化",
     Icon = "pausel",
     Color = Gray,
     Callback = function()
@@ -377,7 +377,7 @@ local Window = WindUI:CreateWindow({
     Title = "<font color='#FFFFFF'>X</font><font color='#CCCCCC'>I</font><font color='#999999'>A</font><font color='#666666'>O</font><font color='#444444'>X</font><font color='#333333'>I</font> <font color='#666666'>S</font><font color='#444444'>C</font><font color='#222222'>R</font><font color='#111111'>I</font><font color='#000000'>P</font><font color='#000000'>T</font><font color='#FFAEC4'></font>",
     IconTransparency = 1,
     Author = "byBkFd",
-    Folder = "XIAOXI",
+    Folder = "bsgm73I",
     Size = UDim2.fromOffset(700, 500),
     Transparent = true,
     Theme = "Dark",
@@ -389,7 +389,7 @@ local Window = WindUI:CreateWindow({
 })
 
 Window:Tag({
-        Title = "免费版",
+        Title = "破解版",
         Radius = 10,
         Color = Color3.fromHex("#ffffff"),
     })
@@ -569,8 +569,8 @@ local Tabs = {
 
 -- ==================== 主页内容 ====================
 Tabs.Main:Paragraph({
-    Title = "欢迎使用bsgm73赛马娘",
-    Desc = "作者：Bkfd｜ UI提供：鱼腥草｜赛马娘\n版本：v1.0.0\n\n本人亲自制作",
+    Title = "欢迎使用BkFd赛马娘",
+    Desc = "作者：BkFd｜ UI提供：鱼腥草｜赛马娘\n版本：v1.0.0\n\n本人亲自制作",
     ImageSize = 50,
     Thumbnail = "https://raw.githubusercontent.com/xiaoxi9008/chesksks/refs/heads/main/1357873301.jpg",
     ThumbnailSize = 170
@@ -584,7 +584,7 @@ Tabs.Main:Button({
     Callback = function()
         WindUI:Notify({
             Title = "欢迎!",
-            Content = "感谢使用XIAOXI",
+            Content = "感谢使用",
             Icon = "heart",
             Duration = 3
         })
@@ -1028,7 +1028,7 @@ aboutSection:Paragraph({
             Icon = "copy",
             Variant = "Tertiary",
             Callback = function()
-                setclipboard("点击链接加入群聊【Bkfd HUB新主群 [ 联邦 ]】：https://uun.qq.com/universal-share/share?ac=1&authKey=uxronKi8Dwy0M%2BHPaFABKnzV8WyrSFglO3Of1XoiXRiLAPhBjUsMtdNH9v8jtzfN&busi_data=eyJncm91cENvZGUiOiI1OTA2NDI0MjciLCJ0b2tlbiI6IjA1RGVNUVNmVGRaYXRtcHhCdGtjUTVuMjljbm1DYlc3TUFHYmZMTmJsUDFXTW9YcXREbDdtakdRdGsxTWpHa1EiLCJ1aW4iOiIzNTc0NzY5NDE1In0%3D&data=Al4_C1ij3U2uuYGj_vrlBtLmLlYlshk79tTG094L7oiov3r5WBW8KV_BKUQBiEzRttVcPVGPi0PIdXFtKmyomw&svctype=4&tempid=h5_group_info")
+                setclipboard("点击链接加入群聊【BkFd HUB新主群 [ 联邦 ]】：https://qun.qq.com/universal-share/share?ac=1&authKey=uxronKi8Dwy0M%2BHPaFABKnzV8WyrSFglO3Of1XoiXRiLAPhBjUsMtdNH9v8jtzfN&busi_data=eyJncm91cENvZGUiOiI1OTA2NDI0MjciLCJ0b2tlbiI6IjA1RGVNUVNmVm1DYlc3TUFHYmZDFXTW9YcXREbDdtakdRdGsxTWpHa1EiLCJ1aW4iOiIzNTc0Nzata=Al4_C1ij3U2uuYGj_vrlBtLmLlYlshk79tTG094L7oiov3r5WBW8KV_BKUQBiEzRttVcPVGPi0PIdXFtKmyomw&svctype=4&tempid=h5_group_info")
                 WindUI:Notify({
                     Title = "已复制!",
                     Content = "qq主群链接已复制到剪贴板",
@@ -1105,8 +1105,8 @@ end)
         
         -- 显示通知
         Library:Notify({
-            Title = "XIAOXI HUB",
-            Description = "该服务器正在更新中无法加载",
+            Title = "BkFdI HUB",
+            Description = "该服务器正在更新中你加载你雷霆呢",
             Time = 6
         })
         
@@ -1147,7 +1147,7 @@ end)
         IconAlign = "Left",
         Callback = function()
             Window:Destroy()
-            loadstring(game:HttpGet("https://raw.githubusercontent.com/lhhl4432-byte/-/refs/heads/main/%E6%89%8B%E6%9E%AA%E7%AB%9E%E6%8A%80%E5%9C%BA%E4%BB%98%E8%B4%B9%E7%89%88.lua"))() 
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/lhhl4432-byte/-/refs/heads/main/%E6%9C%80%E5%BC%BA%E6%88%98%E5%9C%BA.lua"))() 
         end
     })
 
@@ -1206,8 +1206,8 @@ end)
         
         -- 显示通知
         Library:Notify({
-            Title = "XIAOXI HUB",
-            Description = "该服务器正在更新中无法加载",
+            Title = "BkFd HUB",
+            Description = "该服务器正在更新中你加载你雷霆呢",
             Time = 6
         })
         
@@ -1236,7 +1236,7 @@ end)
         IconAlign = "Left",
         Callback = function()
             Window:Destroy()
-            loadstring(game:HttpGet("https://pastebin.com/raw/cmVeJyki"))() 
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/lhhl4432-byte/-/refs/heads/main/nico%E4%B8%8B%E4%B8%80%E4%B8%AA%E6%9C%BA%E5%99%A8.lua="))() 
         end
     })
 
@@ -1297,7 +1297,7 @@ ScriptTab:Button({
         IconAlign = "Left",
         Callback = function()
             Window:Destroy()
-            loadstring(game:HttpGet("https://pastebin.com/raw/wxQ6JsLe""))() 
+            loadstring(game:HttpGet("https://pastebin.com/raw/wxQ6JsLe"))() 
         end
     })
     
@@ -1439,7 +1439,7 @@ end
 WindUI:Popup({
     Title = "<font color='#FFFFFF'>X</font><font color='#CCCCCC'>I</font><font color='#999999'>A</font><font color='#666666'>O</font><font color='#444444'>X</font><font color='#333333'>I</font> <font color='#666666'>S</font><font color='#444444'>C</font><font color='#222222'>R</font><font color='#111111'>I</font><font color='#000000'>P</font><font color='#000000'>T</font>",
     IconThemed = true,
-    Content = "尊贵付费版用户" .. game.Players.LocalPlayer.Name .. "使用<font color='#FFFFFF'>X</font><font color='#CCCCCC'>I</font><font color='#999999'>A</font><font color='#666666'>O</font><font color='#444444'>X</font><font color='#333333'>I</font> <font color='#666666'>S</font><font color='#444444'>C</font><font color='#222222'>R</font><font color='#111111'>I</font><font color='#000000'>P</font><font color='#000000'>T</font>付费版",
+    Content = "尊贵破解版用户" .. game.Players.LocalPlayer.Name .. "使用<font color='#FFFFFF'>X</font><font color='#CCCCCC'>I</font><font color='#999999'>A</font><font color='#666666'>O</font><font color='#444444'>X</font><font color='#333333'>I</font> <font color='#666666'>S</font><font color='#444444'>C</font><font color='#222222'>R</font><font color='#111111'>I</font><font color='#000000'>P</font><font color='#000000'>T</font>付费版",
     Buttons = {
         {
             Title = "取消",
