@@ -1,4 +1,5 @@
 local WindUI
+local Window  -- 声明局部变量
 
 do
     local ok, result = pcall(function()
@@ -10,6 +11,12 @@ do
     else 
         WindUI = loadstring(game:HttpGet("https://raw.githubusercontent.com/gycgchgyfytdttr/shenqin/refs/heads/main/ui.lua"))()
     end
+end
+
+-- 检查 WindUI 是否加载成功
+if not WindUI then
+    warn("WindUI 加载失败，脚本终止")
+    return
 end
 
 local Players = game:GetService("Players")
@@ -61,6 +68,7 @@ LocalPlayer.CharacterAdded:Connect(function()
 end)
 
 -- ========== 自动蹲下功能（和连跳一样逻辑） ==========
+-- 注意：Humanoid.Crouch 是只读属性，直接赋值可能无效或报错，此处保留原逻辑但建议改用其他方式
 local AutoCrouchEnabled = false
 local AutoCrouchConnection = nil
 
@@ -74,9 +82,13 @@ local function StartAutoCrouch()
             local Humanoid = LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
             if Humanoid then
                 if Humanoid.FloorMaterial ~= Enum.Material.Air then
-                    Humanoid.Crouch = true
+                    pcall(function()
+                        Humanoid.Crouch = true  -- 可能只读，用 pcall 防止报错
+                    end)
                 else
-                    Humanoid.Crouch = false
+                    pcall(function()
+                        Humanoid.Crouch = false
+                    end)
                 end
             end
         end
@@ -239,15 +251,15 @@ local function createUI()
         ThumbnailSize = 170
     })
     
-HomeTab:Keybind({
-    Flag = "KeybindTest",
-    Title = "快捷键",
-    Desc = "打开UI的快捷键",
-    Value = "G",
-    Callback = function(v) 
-        Window:SetToggleKey(Enum.KeyCode[v]) 
-    end
-})    
+    HomeTab:Keybind({
+        Flag = "KeybindTest",
+        Title = "快捷键",
+        Desc = "打开UI的快捷键",
+        Value = "G",
+        Callback = function(v) 
+            Window:SetToggleKey(Enum.KeyCode[v]) 
+        end
+    })    
     
     HomeTab:Divider()
 
@@ -275,12 +287,13 @@ HomeTab:Keybind({
         Border = true,
     })
 
-    FunctionTab:Section({
+    -- 将 Toggle 放入 Section 内，确保显示
+    local autoMoveSection = FunctionTab:Section({
         Title = "自动移动",
         Description = "自动移动"
     })
 
-    FunctionTab:Toggle({
+    autoMoveSection:Toggle({
         Title = "自动连跳",
         Default = false,
         Callback = function(Value)
@@ -294,21 +307,21 @@ HomeTab:Keybind({
         end
     })
 
-    FunctionTab:Toggle({
-    Title = "自动蹲下",
-    Default = false,
-    Callback = function(Value)
-        ToggleAutoCrouch(Value)
-        WindUI:Notify({
-            Title = "nico",
-            Content = "自动蹲下 " .. (Value and "已开启" or "已关闭"),
-            Icon = "robot",
-            Duration = 1.5
-        })
-    end
-})
+    autoMoveSection:Toggle({
+        Title = "自动蹲下",
+        Default = false,
+        Callback = function(Value)
+            ToggleAutoCrouch(Value)
+            WindUI:Notify({
+                Title = "nico",
+                Content = "自动蹲下 " .. (Value and "已开启" or "已关闭"),
+                Icon = "robot",
+                Duration = 1.5
+            })
+        end
+    })
 
-    FunctionTab:Toggle({
+    autoMoveSection:Toggle({
         Title = "忠实往前走",
         Default = false,
         Callback = function(Value)
@@ -322,7 +335,7 @@ HomeTab:Keybind({
         end
     })
 
-    FunctionTab:Paragraph({
+    autoMoveSection:Paragraph({
         Title = "说明",
         Desc = "刷分专属😋"
     })
