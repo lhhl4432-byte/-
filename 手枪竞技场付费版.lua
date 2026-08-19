@@ -19,6 +19,9 @@ local RunService = game:GetService("RunService")
 local LocalPlayer = Players.LocalPlayer
 local Camera = Workspace.CurrentCamera
 
+-- 添加占位函数，防止 AddSnowEffect 未定义导致脚本中断
+local function AddSnowEffect() end
+
 local function createUI()
     local Window = WindUI:CreateWindow({
         Title = "<font color='#FFFFFF'>X</font><font color='#CCCCCC'>I</font><font color='#999999'>A</font><font color='#666666'>O</font><font color='#444444'>X</font><font color='#333333'>I</font> <font color='#666666'>H</font><font color='#444444'>U</font><font color='#222222'>B</font><font color='#FFAEC4'></font>",
@@ -50,10 +53,11 @@ local function createUI()
         }
     })
     
+    -- 原 AddSnowEffect 调用，现在安全（因为已定义占位函数）
     AddSnowEffect(Window.UIElements.Main.Background, 30, 14, 0.5)
 
     Window:Tag({
-        Title = "破解版",
+        Title = "v1.0版",
         Radius = 4,
         Color = Color3.fromHex("#ffffff"),
     })
@@ -88,76 +92,31 @@ RunService.RenderStepped:Connect(function()
         frames = 0
         lastTime = tick()
 
-        fpsTag:SetTitle("FPS: "..fps)
+        -- 使用 pcall 保护，防止 SetTitle 不存在报错
+        pcall(function() fpsTag:SetTitle("FPS: "..fps) end)
 
-        ------------------------------------------------
         -- FPS 颜色
-        ------------------------------------------------
-
-        -- 0~19 红色
         if fps <= 19 then
-
-            fpsTag:SetColor(
-                Color3.fromRGB(255, 70, 70)
-            )
-
-        -- 20~60 黄色
+            pcall(function() fpsTag:SetColor(Color3.fromRGB(255, 70, 70)) end)
         elseif fps >= 20 and fps <= 60 then
-
-            fpsTag:SetColor(
-                Color3.fromRGB(255, 220, 0)
-            )
-
-        -- 61~90 白色
+            pcall(function() fpsTag:SetColor(Color3.fromRGB(255, 220, 0)) end)
         elseif fps >= 61 and fps <= 90 then
-
-            fpsTag:SetColor(
-                Color3.fromRGB(255, 255, 255)
-            )
-
-        -- 91~120 黑色
+            pcall(function() fpsTag:SetColor(Color3.fromRGB(255, 255, 255)) end)
         elseif fps >= 91 and fps <= 120 then
-
-            fpsTag:SetColor(
-                Color3.fromRGB(35, 35, 35)
-            )
-
-        -- 121~165 闪耀金色
+            pcall(function() fpsTag:SetColor(Color3.fromRGB(35, 35, 35)) end)
         elseif fps >= 121 and fps <= 165 then
-
             flash = not flash
-
             if flash then
-
-                fpsTag:SetColor(
-                    Color3.fromRGB(255, 240, 120)
-                )
-
+                pcall(function() fpsTag:SetColor(Color3.fromRGB(255, 240, 120)) end)
             else
-
-                fpsTag:SetColor(
-                    Color3.fromRGB(255, 200, 0)
-                )
-
+                pcall(function() fpsTag:SetColor(Color3.fromRGB(255, 200, 0)) end)
             end
-
-        -- 166~240 高级黑金色
         elseif fps >= 166 and fps <= 240 then
-
             flash = not flash
-
             if flash then
-
-                fpsTag:SetColor(
-                    Color3.fromRGB(20, 20, 20)
-                )
-
+                pcall(function() fpsTag:SetColor(Color3.fromRGB(20, 20, 20)) end)
             else
-
-                fpsTag:SetColor(
-                    Color3.fromRGB(120, 90, 20)
-                )
-
+                pcall(function() fpsTag:SetColor(Color3.fromRGB(120, 90, 20)) end)
             end
         end
     end
@@ -174,52 +133,23 @@ local pingTag = Window:Tag({
 local flash = false
 
 task.spawn(function()
-
     while true do
-
         task.wait(1)
-
         local ping = math.floor(
             Stats.Network.ServerStatsItem["Data Ping"]:GetValue()
         )
+        pcall(function() pingTag:SetTitle(ping.." ms") end)
 
-        pingTag:SetTitle(ping.." ms")
-
-        ------------------------------------------------
-        -- 延迟颜色
-        ------------------------------------------------
-
-        -- 0~199ms 绿色
         if ping <= 199 then
-
-            pingTag:SetColor(
-                Color3.fromRGB(0,255,120)
-            )
-
-        -- 200~1000ms 红色
+            pcall(function() pingTag:SetColor(Color3.fromRGB(0,255,120)) end)
         elseif ping >= 200 and ping <= 1000 then
-
-            pingTag:SetColor(
-                Color3.fromRGB(255,60,60)
-            )
-
-        -- 1000ms以上 恐怖闪烁色
+            pcall(function() pingTag:SetColor(Color3.fromRGB(255,60,60)) end)
         elseif ping > 1000 then
-
             flash = not flash
-
             if flash then
-
-                pingTag:SetColor(
-                    Color3.fromRGB(255,0,0)
-                )
-
+                pcall(function() pingTag:SetColor(Color3.fromRGB(255,0,0)) end)
             else
-
-                pingTag:SetColor(
-                    Color3.fromRGB(80,0,0)
-                )
-
+                pcall(function() pingTag:SetColor(Color3.fromRGB(80,0,0)) end)
             end
         end
     end
@@ -921,10 +851,10 @@ GeneralTab:Toggle({
     Title = "无限跳",
     Default = false,
     Callback = function(v)
-        Jump = v
+        local JumpEnabled = v  -- 使用局部变量，避免未定义全局
         if v == true then
             game:GetService("UserInputService").JumpRequest:Connect(function()
-                if Jump then
+                if JumpEnabled then
                     game.Players.LocalPlayer.Character.Humanoid:ChangeState("Jumping")
                 end
             end)
@@ -2109,7 +2039,7 @@ end
 WindUI:Popup({
     Title = "<font color='#FFFFFF'>X</font><font color='#CCCCCC'>I</font><font color='#999999'>A</font><font color='#666666'>O</font><font color='#444444'>X</font><font color='#333333'>I</font> <font color='#666666'>H</font><font color='#444444'>U</font><font color='#222222'>B</font>",
     IconThemed = true,
-    Content = "尊贵破解版用户" .. game.Players.LocalPlayer.Name .. "使用<font color='#FFFFFF'>X</font><font color='#CCCCCC'>I</font><font color='#999999'>A</font><font color='#666666'>O</font><font color='#444444'>X</font><font color='#333333'>I</font> <font color='#666666'>H</font><font color='#444444'>U</font><font color='#222222'>B</font>手枪竞技场破解版",
+    Content = "尊贵的用户" .. game.Players.LocalPlayer.Name .. "使用<font color='#FFFFFF'>X</font><font color='#CCCCCC'>I</font><font color='#999999'>A</font><font color='#666666'>O</font><font color='#444444'>X</font><font color='#333333'>I</font> <font color='#666666'>H</font><font color='#444444'>U</font><font color='#222222'>B</font>手枪竞技场",
     Buttons = {
         {
             Title = "取消",
