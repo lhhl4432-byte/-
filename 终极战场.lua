@@ -24,10 +24,8 @@ cleanupConnections()
 
 print("✅ 环境净化完成，LogService 干扰已禁用")
 
-local isfunctionhooked = clonefunction(isfunctionhooked)
-if isfunctionhooked(game.HttpGet) or isfunctionhooked(getnamecallmethod) or isfunctionhooked(request) then 
-    return 
-end
+-- 添加 AddSnowEffect 占位函数，防止调用未定义报错
+local function AddSnowEffect() end
 
 local function verifyKey(k)
     local ok, res = pcall(function()
@@ -74,9 +72,7 @@ local Window = WindUI:CreateWindow({
     UserEnabled = true,
     SideBarWidth = 135,
     HasOutline = true,
-    Transparent = true,
     Background = "https://raw.githubusercontent.com/xiaoxi9008/Mysterious-coral./refs/heads/main/1777784268833.jpeg",
-    Theme = "Dark",
     User = {
         Enabled = true,
         Callback = function() end,
@@ -186,7 +182,6 @@ Window:EditOpenButton({
     }),
     Draggable = true,
 })
-
 
 task.spawn(function()
     local button = Window.UIElements.Main:FindFirstChild("OpenButton")
@@ -352,10 +347,18 @@ local HttpService = game:GetService("HttpService")
 local InviteCode = "E6meCtvdZ"
 local DiscordAPI = "https://discord.com/api/v10/invites/" .. InviteCode .. "?with_counts=true&with_expiration=true"
 
-local Response = HttpService:JSONDecode(WindUI.Creator.Request({
-    Url = DiscordAPI,
-    Method = "GET"
-}).Body)
+-- 使用 pcall 保护网络请求
+local function getDiscordInfo()
+    local ok, data = pcall(function()
+        return HttpService:JSONDecode(game:HttpGet(DiscordAPI))
+    end)
+    if ok and data and data.guild then
+        return data
+    end
+    return nil
+end
+
+local Response = getDiscordInfo()
 
 if Response and Response.guild then
     local iconUrl = Response.guild.icon and ("https://cdn.discordapp.com/icons/" .. Response.guild.id .. "/" .. Response.guild.icon .. ".png?size=1024") or "rbxassetid://129260712070622"
@@ -369,7 +372,7 @@ if Response and Response.guild then
         ImageSize = 42,
     })
 else
-    warn("Discord API Error: ", HttpService:JSONEncode(Response))
+    warn("Discord API 获取失败，跳过显示")
 end
 
 Tab:Button({
@@ -2485,10 +2488,18 @@ local HttpService = game:GetService("HttpService")
 local InviteCode = "E6meCtvdZ"
 local DiscordAPI = "https://discord.com/api/v10/invites/" .. InviteCode .. "?with_counts=true&with_expiration=true"
 
-local Response = HttpService:JSONDecode(WindUI.Creator.Request({
-    Url = DiscordAPI,
-    Method = "GET"
-}).Body)
+-- 使用 pcall 保护网络请求
+local function getDiscordInfo()
+    local ok, data = pcall(function()
+        return HttpService:JSONDecode(game:HttpGet(DiscordAPI))
+    end)
+    if ok and data and data.guild then
+        return data
+    end
+    return nil
+end
+
+local Response = getDiscordInfo()
 
 if Response and Response.guild then
     local iconUrl = Response.guild.icon and ("https://cdn.discordapp.com/icons/" .. Response.guild.id .. "/" .. Response.guild.icon .. ".png?size=1024") or "rbxassetid://129260712070622"
@@ -2502,7 +2513,7 @@ if Response and Response.guild then
         ImageSize = 42,
     })
 else
-    warn("Discord API Error: ", HttpService:JSONEncode(Response))
+    warn("Discord API 获取失败，跳过显示")
 end
 Tab:Button({
     Title = "copy discord link",
