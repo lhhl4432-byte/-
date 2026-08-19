@@ -11,6 +11,11 @@ do
     end
 end
 
+if not WindUI then
+    warn("WindUI 加载失败")
+    return
+end
+
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Players = game:GetService("Players")
 local Subtitles = require(ReplicatedStorage.UI.Modules.Subtitles)
@@ -237,7 +242,8 @@ Tabs.about:Paragraph({
 
 Tabs.about:Divider()
 
-AboutTab:Keybind({
+-- 修复：将 AboutTab 改为 Tabs.about
+Tabs.about:Keybind({
     Flag = "KeybindTest",
     Title = "快捷键",
     Desc = "打开UI的快捷键",
@@ -3510,169 +3516,4 @@ do
         noFogConn = RunService.Heartbeat:Connect(function()
             pcall(function()
                 Lighting.FogEnd = 1e6
-            end)
-        end)
-    end
-
-    local function stopNoFog()
-        if noFogConn then noFogConn:Disconnect() noFogConn = nil end
-        pcall(function()
-            Lighting.FogEnd = originalLighting.FogEnd
-        end)
-    end
-
-    VisualSection:Toggle({
-        Title = "无雾",
-        Description = "开启无雾",
-        Default = false,
-        Callback = function(state)
-            noFogEnabled = state
-            if state then startNoFog() else stopNoFog() end
-        end
-    })
-
-    local ServerSection = Tabs.p:Section({
-        Title = "服务器工具",
-        Description = "服务器相关功能"
-    })
-
-    ServerSection:Button({
-        Title = "重新加入服务器",
-        Color = Color3.fromHex("#999999"),
-        Callback = function()
-            Notify("服务器", "正在重新加入服务器...", 3)
-            pcall(function() TeleportService:Teleport(game.PlaceId, LocalPlayer) end)
-        end
-    })
-
-    ServerSection:Button({
-        Title = "切换服务器",
-        Color = Color3.fromHex("#999999"),
-        Callback = function()
-            Notify("服务器", "正在寻找新服务器...", 3)
-            local servers = {}
-            local success, result = pcall(function()
-                return game:HttpGet(string.format("https://games.roblox.com/v1/games/%d/servers/Public?sortOrder=Asc&limit=100", game.PlaceId))
-            end)
-            if success and result and type(result) == "string" then
-                local ok, data = pcall(function() return HttpService:JSONDecode(result) end)
-                if ok and data and data.data then
-                    for _, v in pairs(data.data) do
-                        if v.playing < v.maxPlayers and v.id ~= game.JobId then table.insert(servers, v.id) end
-                    end
-                end
             end
-            if #servers > 0 then
-                pcall(function() TeleportService:TeleportToPlaceInstance(game.PlaceId, servers[math.random(1,#servers)], LocalPlayer) end)
-            else
-                Notify("错误", "未找到可用服务器。", 5)
-            end
-        end
-    })
-end
-
--- ########## 界面设置 标签页 ##########
-do
-    local MenuGroup = Tabs["界面设置"]:Section({
-        Title = "菜单",
-        Description = "界面相关设置"
-    })
-
-    MenuGroup:Button({
-        Title = "卸载脚本",
-        Color = Color3.fromHex("#FF4444"),
-        Callback = function()
-            if nowe then toggleFly(false) end
-            if isAntiSelfDamage then toggleAntiSelfDamageFunc(false) end
-            if isAntiKnockback then toggleAntiKnockbackFunc(false) end
-            if isAntiRagdoll then toggleAntiRagdollFunc(false) end
-            Window:Destroy()
-        end
-    })
-end
-
--- ########## 角色重生处理 ##########
-LocalPlayer.CharacterAdded:Connect(function(char)
-    task.wait(0.7)
-    local hum = char:FindFirstChildWhichIsA("Humanoid")
-    local humRootPart = char:FindFirstChild("HumanoidRootPart")
-    
-    if hum then hum.PlatformStand = false end
-    if humRootPart then humRootPart.CanCollide = true end
-    if char:FindFirstChild("Animate") then char.Animate.Disabled = false end
-    
-    nowe = false
-    tpwalking = false
-    speeds = 1
-    
-    if isAntiSelfDamage then
-        if namecallHook1 then hookmetamethod(game, "__namecall", namecallHook1) end
-        namecallHook1 = hookmetamethod(game, "__namecall", newcclosure(function(self, ...)
-            local method = getnamecallmethod():lower()
-            if self.Name == "ForceSelfDamage" and method == "fireserver" then return nil end
-            return namecallHook1(self, ...)
-        end))
-    end
-    
-    if isAntiKnockback then
-        if renderConnection then renderConnection:Disconnect() end
-        renderConnection = RunService.RenderStepped:Connect(function(deltaTime)
-            local char = LocalPlayer.Character
-            if not char then return end
-            local hum = char:FindFirstChildWhichIsA("Humanoid")
-            if not hum then return end
-            local antiFlingObj = char:FindFirstChild("Anti-fling/LocalPlat")
-            if antiFlingObj then antiFlingObj:Destroy() end
-            hum:SetStateEnabled(Enum.HumanoidStateType.FallingDown, false)
-            hum:SetStateEnabled(Enum.HumanoidStateType.Freefall, false)
-        end)
-    end
-    
-    if isAntiRagdoll then
-        if namecallHook2 then hookmetamethod(game, "__namecall", namecallHook2) end
-        namecallHook2 = hookmetamethod(game, "__namecall", newcclosure(function(self, ...)
-            local method = getnamecallmethod()
-            local args = { ... }
-            if method == "SetStateEnabled" and typeof(self) == "Instance" and self:IsA("Humanoid") then
-                local state = args[1]
-                if state == Enum.HumanoidStateType.Ragdoll then
-                    return namecallHook2(self, state, false)
-                end
-            end
-            return namecallHook2(self, ...)
-        end))
-    end
-end)
-
--- 飞行按键控制
-UserInputService.InputBegan:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.Keyboard and nowe then
-        if input.KeyCode == Enum.KeyCode.Space then
-            tis = RunService.RenderStepped:Connect(function()
-                local humRootPart = LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
-                if humRootPart then
-                    humRootPart.CFrame = humRootPart.CFrame * CFrame.new(0, 1, 0)
-                end
-            end)
-        elseif input.KeyCode == Enum.KeyCode.LeftShift then
-            dis = RunService.RenderStepped:Connect(function()
-                local humRootPart = LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
-                if humRootPart then
-                    humRootPart.CFrame = humRootPart.CFrame * CFrame.new(0, -1, 0)
-                end
-            end)
-        end
-    end
-end)
-
-UserInputService.InputEnded:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.Keyboard then
-        if input.KeyCode == Enum.KeyCode.Space and tis then
-            tis:Disconnect()
-            tis = nil
-        elseif input.KeyCode == Enum.KeyCode.LeftShift and dis then
-            dis:Disconnect()
-            dis = nil
-        end
-    end
-end)
