@@ -2,9 +2,11 @@ local WindUI = loadstring(game:HttpGet("https://raw.githubusercontent.com/Potato
 
 getgenv().TransparencyEnabled = getgenv().TransparencyEnabled or false
 
-
-
-
+-- ========== 添加占位函数和变量 ==========
+local function applyBlurEffect(enabled) end  -- 占位，防止调用时报错
+local fontColorAnimations = {}              -- 初始化空表，防止遍历时报错
+local windowOpen = false                    -- 初始化窗口状态变量
+-- =========================================
 
 local function gradient(text, startColor, endColor)
     local result, chars = "", {}
@@ -43,7 +45,7 @@ local Window = WindUI:CreateWindow({
 })
 
 Window:Tag({
-        Title = "破解版",
+        Title = "看你妈呢",
         Radius = 10,
         Color = Color3.fromHex("#ffffff"),
     })
@@ -210,6 +212,7 @@ if rainbowStroke then
     borderAnimation = startBorderAnimation(Window, animationSpeed)
 end
 
+-- ========== 注意：以下游戏逻辑变量和函数定义保持不变，但不包含阻塞等待角色 ==========
 local animationIDs = {
     ["rbxassetid://10468665991"] = true,
     ["rbxassetid://10466974800"] = true,
@@ -284,13 +287,18 @@ local animationIDs = {
     ["rbxassetid://16082123712"] = {range = 40, behind = 20}
 }
 
-local player = game.Players.LocalPlayer
-local character = player.Character or player.CharacterAdded:Wait()
-local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
-
+-- 以下游戏逻辑变量和函数定义保持不变，它们不依赖角色立即存在
 local detectionRange = 15
 local detectionMode = "360"
 local lastTeleportTime = 0
+local ultraInstinctActive = false
+local RunService = game:GetService("RunService")
+
+-- 注：player, character, humanoidRootPart 将在脚本末尾初始化，暂时不定义
+-- 但函数内部会使用这些变量，所以我们需要声明为局部变量（但暂时为 nil）
+local player
+local character
+local humanoidRootPart
 
 local function getNearbyPlayers(radius)
     local players = {}
@@ -343,10 +351,6 @@ local function checkAnimations()
         end
     end
 end
-
-local ultraInstinctActive = false
-
-local RunService = game:GetService("RunService")
 
 local function ultraInstinctLoop()
     local connection
@@ -840,6 +844,7 @@ game:GetService("RunService").Heartbeat:Connect(function()
     end
 end)
 
+-- ========== UI 构建（现在开始，不会阻塞） ==========
 local strongestBattleTab = Window:Tab({Title = "最强战场", Icon = "swords", Locked = false})
 
 local combatSection = strongestBattleTab:Section({Title = "战斗功能", Icon = "sword", Opened = true})
@@ -1048,20 +1053,29 @@ autoSection:Toggle({
     end
 })
 
+-- ========== 角色初始化（移到UI构建之后） ==========
+player = game.Players.LocalPlayer
+character = player.Character or player.CharacterAdded:Wait()
+humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+
+-- 连接角色重生事件，更新角色变量
+player.CharacterAdded:Connect(onCharacterAdded)
+
+-- ========== 窗口关闭和销毁回调（已修复） ==========
 Window:OnClose(function()
     windowOpen = false
-    if rainbowBorderAnimation then
-        rainbowBorderAnimation:Disconnect()
-        rainbowBorderAnimation = nil
+    if borderAnimation then  -- 修复：原为 rainbowBorderAnimation，实际变量名为 borderAnimation
+        borderAnimation:Disconnect()
+        borderAnimation = nil
     end
-    applyBlurEffect(false)
+    applyBlurEffect(false)  -- 占位函数，安全
 end)
 
 Window:OnDestroy(function()
     windowOpen = false
-    if rainbowBorderAnimation then
-        rainbowBorderAnimation:Disconnect()
-        rainbowBorderAnimation = nil
+    if borderAnimation then
+        borderAnimation:Disconnect()
+        borderAnimation = nil
     end
     for _, animation in pairs(fontColorAnimations) do
         animation:Disconnect()
@@ -1070,7 +1084,8 @@ Window:OnDestroy(function()
     applyBlurEffect(false)
 end)
 
-MusicTab:Button({ -- 把 Scripts 改成 LoadScript
+-- ========== 音乐按钮 ==========
+MusicTab:Button({
     Title = "网易云音乐",
     Icon = "file",
     Callback = function()
